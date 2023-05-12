@@ -6,8 +6,23 @@ import Stats from "three/examples/jsm/libs/stats.module";
 import { GUI } from "dat.gui";
 import { Matrix3, Mesh } from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
-// import studio from '@theatre/studio'
-// studio.initialize()
+import studio from '@theatre/studio'
+import { getProject } from '@theatre/core'
+
+//theatrejs config
+studio.initialize()
+const config = {}
+const project = getProject('My Project', config)
+const sheet = project.sheet("scene")
+const box = sheet.object("Box",{
+  position:{
+    x:0,
+    y:0,
+    z:0,
+  } 
+
+})
+
 const scene = new THREE.Scene();
 const backgroundColor = 0xf1f1f1;
 
@@ -62,12 +77,11 @@ play.material.color.setHex(0xa5b8c9);
 play.position.z = -0.99;
 play.rotation.x = -Math.PI / 2;
 
-let mixer;
-let leftArmBone;
 
 const options = {
   palette: ["#ffffff"],
 };
+
 const color = new THREE.Color(hemiLight.color);
 const hemiFolder = gui.addFolder("Hemisphere Light");
 hemiFolder
@@ -97,12 +111,16 @@ planeFolder.add(play.rotation, "x", -100, 100, 0.01);
 planeFolder.add(play.rotation, "y", -100, 100, 0.01);
 planeFolder.add(play.rotation, "z", -100, 100, 0.01);
 
+let mixer,model;
+let leftArmBone;
 
 loader.load(
   "Xbot.glb",
   function (gltf) {
+    
     scene.add(gltf.scene);
-    const model = gltf.scene;
+    model = gltf.scene;
+    
     mixer = new THREE.AnimationMixer(gltf.scene);
     // console.log(mixer);
     const clips = gltf.animations;
@@ -115,49 +133,23 @@ loader.load(
     const bones = model.getObjectByName("mixamorigHips");
     const bonHelper = new THREE.SkeletonHelper(bones);
     scene.add(bonHelper);
+    var leftArmBone = model.getObjectByName("mixamorigLeftArm");
 
-    //declare other bones foun those after uploading the model in the threejs editor
-    const spinal = model.getObjectByName("mixamorigSpine");
-    console.log(spinal.parent.position);
-
-    // rightArm = model.getObjectByName("mixamorigLeftArm");
-    leftArmBone = model.getObjectByName("mixamorigLeftArm");
-
-    // Create dat.gui controls for left arm rotation
-    
-    const leftArmFolder = gui.addFolder("Left Arm Control");
-    const leftArmRotation = {
-      x: 0,
-      y: 0,
-      z: 0,
-    };
-    leftArmFolder
-      .add(leftArmRotation, "x", -Math.PI, Math.PI)
-      .name("Rotation X");
-    leftArmFolder
-      .add(leftArmRotation, "y", -Math.PI, Math.PI)
-      .name("Rotation Y");
-    leftArmFolder
-      .add(leftArmRotation, "z", -Math.PI, Math.PI)
-      .name("Rotation Z");
-
-    // Animate the scene
-    function animate() {
-      requestAnimationFrame(animate);
-      // Update left arm bone rotation based on dat.gui values
-      leftArmBone.rotation.x = leftArmRotation.x;
-      leftArmBone.rotation.y = leftArmRotation.y;
-      leftArmBone.rotation.z = leftArmRotation.z;
-
-      // Render scene
-      renderer.render(scene, camera);
-
-      // Call animate() again on next frame
+    box.onValuesChange((newVal)=>{
+      // leftArmBone.rotation.x = newVal.x
+      console.log(leftArmBone.rotation.x);
+      leftArmBone.rotation.x
+      leftArmBone.rotation.x = newVal.position.x
+      function animate() {
+        requestAnimationFrame(animate);
+        // console.log(newVal.x);
+        leftArmBone.rotation.x = newVal.position.x
+        renderer.render(scene, camera);
       
-    }
-
-    // Start the animation loop
-    animate();
+        stats.update();
+      }
+      animate()
+    })
 
     //clips name
     const clip = THREE.AnimationClip.findByName(clips, "idle");
@@ -188,6 +180,7 @@ loader.load(
     });
 
     const action = mixer.clipAction(clip);
+    // action.setLoop(THREE.LoopRepeat);
     action.play();
   },
   (xhr) => {
@@ -199,18 +192,6 @@ loader.load(
 );
 
 
-// rightArm.rotation.x = leftArmRotation.x;
-// rightArm.rotation.y = leftArmRotation.y;
-// rightArm.rotation.z = leftArmRotation.z;
-// console.log(rightArm);
-
-// const geometry = new THREE.BoxGeometry()
-// const material = new THREE.MeshStandardMaterial({
-//     color:"blue",
-// })
-
-// const cube = new THREE.Mesh(geometry, material)
-// scene.add(cube)
 
 window.addEventListener("resize", onWindowResize, false);
 function onWindowResize() {
@@ -224,42 +205,9 @@ const stats = Stats();
 document.body.appendChild(stats.dom);
 
 
-// const cubeFolder = gui.addFolder('Cube')
-// const cubeRotationFolder = cubeFolder.addFolder('Rotation')
-// cubeRotationFolder.add(cube.rotation, 'x', 0, Math.PI * 2)
-// cubeRotationFolder.add(cube.rotation, 'y', 0, Math.PI * 2)
-// cubeRotationFolder.add(cube.rotation, 'z', 0, Math.PI * 2)
-// cubeFolder.open()
-// cubeRotationFolder.open()
-// const cubePositionFolder = cubeFolder.addFolder('Position')
-// cubePositionFolder.add(cube.position, 'x', -10, 10, 2)
-// cubePositionFolder.add(cube.position, 'y', -10, 10, 2)
-// cubePositionFolder.add(cube.position, 'z', -10, 10, 2)
-// cubeFolder.open()
-// cubePositionFolder.open()
-// const cubeScaleFolder = cubeFolder.addFolder('Scale')
-// cubeScaleFolder.add(cube.scale, 'x', -5, 5)
-// cubeScaleFolder.add(cube.scale, 'y', -5, 5)
-// cubeScaleFolder.add(cube.scale, 'z', -5, 5)
-// cubeFolder.add(cube, 'visible')
-// cubeFolder.open()
-// cubeScaleFolder.open()
 const clock = new THREE.Clock();
 function animate() {
   requestAnimationFrame(animate);
-
-  
-  //stats.begin()
-  // cube.rotation.x += 0.01
-  // cube.rotation.y += 0.01
-  //stats.end()
-  const t = clock.getElapsedTime();
-
-  if (leftArmBone) {
-    // leftArmBone.rotation.x += 0.01;
-    leftArmBone.rotation.z += 0.01;
-    // rightArm.rotation.z += Math.sin(t);
-  }
 
   if (mixer) {
     mixer.update(clock.getDelta());

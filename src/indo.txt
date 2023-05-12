@@ -1,0 +1,43 @@
+    //declare other bones foun those after uploading the model in the threejs editor
+    // const spinal = model.getObjectByName("mixamorigSpine");
+    // console.log(spinal.parent.position);
+
+    // rightArm = model.getObjectByName("mixamorigLeftArm");
+    // leftArmBone = model.getObjectByName("mixamorigLeftArm");
+
+    // Create dat.gui controls for left arm rotation
+    
+    // const leftArmFolder = gui.addFolder("Left Arm Control");
+    // const leftArmRotation = {
+    //   x: 0,
+    //   y: 0,
+    //   z: 0,
+    // };
+    // leftArmFolder
+    //   .add(leftArmRotation, "x", -Math.PI, Math.PI)
+    //   .name("Rotation X");
+    // leftArmFolder
+    //   .add(leftArmRotation, "y", -Math.PI, Math.PI)
+    //   .name("Rotation Y");
+    // leftArmFolder
+    //   .add(leftArmRotation, "z", -Math.PI, Math.PI)
+    //   .name("Rotation Z");
+
+    // Animate the scene
+    // function animate() {
+    //   requestAnimationFrame(animate);
+    //   // Update left arm bone rotation based on dat.gui values
+      
+    //   // leftArmBone.rotation.x = leftArmRotation.x;
+    //   // leftArmBone.rotation.y = leftArmRotation.y;
+    //   // leftArmBone.rotation.z = leftArmRotation.z;
+
+    //   // Render scene
+    //   renderer.render(scene, camera);
+
+    //   // Call animate() again on next frame
+      
+    // }
+
+    // Start the animation loop
+    // animate();
